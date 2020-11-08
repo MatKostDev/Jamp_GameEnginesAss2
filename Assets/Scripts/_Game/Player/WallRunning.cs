@@ -169,13 +169,18 @@ namespace Jampacked.ProjectInca
 				return false;
 			}
 
+            if (a_wallObject.GetComponent<Collider>().isTrigger)
+            {
+                return false;
+            }
+
 			//if ground was touched since the last wall run, a new wall run can be done without waiting for cooldown
 			if (m_touchedGroundSinceLastWallRun)
 			{
 				return true;
 			}
 
-			//check through previous wall runs and 
+            //check through previous wall runs and 
 			foreach (var previousWallRun in m_lastWallRuns)
 			{
 				if (previousWallRun.ObjectRunOn                                          == a_wallObject

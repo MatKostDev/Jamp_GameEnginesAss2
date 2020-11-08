@@ -64,7 +64,7 @@ namespace Jampacked.ProjectInca
 
 		void OnDie()
 		{
-			m_health.currentHealth = m_health.maxHealth;
+			Destroy(gameObject);
 		}
 
 		IEnumerator ColorChangeRoutine()

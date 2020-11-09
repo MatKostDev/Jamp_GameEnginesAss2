@@ -15,8 +15,11 @@ public class DamageNumberDisplay : MonoBehaviour
 
 	[SerializeField]
 	float fadeSpeed = 1f;
-	
+
 	[SerializeField]
+	float initForceMultiplier = 10.0f;
+
+    [SerializeField]
 	float positionDeltaY = 1f;
 	
 	const float START_ALPHA = 2f;
@@ -30,6 +33,8 @@ public class DamageNumberDisplay : MonoBehaviour
     TMP_Text m_textDisplay;
     
     Transform m_transform;
+
+	Rigidbody m_rigidBody;
     
     Vector3 m_initialPosition;
     Vector3 m_endPosition;
@@ -43,6 +48,7 @@ public class DamageNumberDisplay : MonoBehaviour
     {
 	    m_transform   = transform;
 	    m_textDisplay = GetComponent<TMP_Text>();
+	    m_rigidBody   = GetComponent<Rigidbody>();
 	    
 	    m_cameraTransform = a_cameraTransform;
 
@@ -60,6 +66,9 @@ public class DamageNumberDisplay : MonoBehaviour
 	    {
 		    m_textDisplay.color = regularColor;
 	    }
+	    
+	    m_rigidBody.AddForce( new Vector3(Random.Range(-0.7f, 0.7f), 1, Random.Range(-0.7f, 0.7f)) * initForceMultiplier, ForceMode.Impulse);
+	    //m_rigidBody.AddForce( Vector3.up * initForceMultiplier, ForceMode.Impulse);
     }
 
     void Update()
@@ -74,7 +83,7 @@ public class DamageNumberDisplay : MonoBehaviour
 	    //face the camera, this looks a bit jank because just doing it normally makes it look the opposite direction
 		m_transform.LookAt(2f * m_transform.position - m_cameraTransform.position);
 	    
-	    m_transform.position = Vector3.Lerp(m_initialPosition, m_endPosition, m_interpolationParam);
+	    //m_transform.position = Vector3.Lerp(m_initialPosition, m_endPosition, m_interpolationParam);
 
 	    float newAlpha = Mathf.Lerp(START_ALPHA, END_ALPHA, m_interpolationParam);
 

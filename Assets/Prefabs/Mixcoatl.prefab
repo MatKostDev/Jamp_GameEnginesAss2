@@ -5558,7 +5558,7 @@ Transform:
   m_GameObject: {fileID: 4919456844593507689}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2739925542132322749}
   - {fileID: 8199969278860720104}
@@ -5631,7 +5631,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d08e681bf03816c4d8f04bf4ecbfcc81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 9999
+  maxHealth: 80
   currentHealth: 0
 --- !u!1 &4921865115023361339
 GameObject:

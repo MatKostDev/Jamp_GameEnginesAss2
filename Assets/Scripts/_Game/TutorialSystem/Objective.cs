@@ -18,8 +18,6 @@ namespace Jampacked.ProjectInca
             {
                 throw new ArgumentNullException("OBJECTIVE MANAGER MUST EXIST IN THE TUTORIAL SCENE!");
             }
-
-            m_objectiveManager.RegisterObjective(this);
         }
 
         protected void OnCompleted()

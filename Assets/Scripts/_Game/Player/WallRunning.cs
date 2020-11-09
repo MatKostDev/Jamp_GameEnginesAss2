@@ -339,6 +339,12 @@ namespace Jampacked.ProjectInca
 				return;
 			}
 
+            if (sideWallRay.collider.isTrigger)
+			{
+				StopWallRun();
+				return;
+            }
+
 			m_wallNormal = sideWallRay.normal;
 
 			if (m_wallNormal != lastFrameWallNormal)

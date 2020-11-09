@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,29 +7,29 @@ namespace Jampacked.ProjectInca
 {
     public class ObjectiveManager : MonoBehaviour
     {
-        List<Objective> m_objectiveList = new List<Objective>();
+        public List<Objective> objectiveList = new List<Objective>();
 
         void Start()
         {
-
-        }
-
-        void Update()
-        {
-            //Debug.Log(m_objectiveList.Count);
-        }
-
-        public void RegisterObjective(Objective a_objective)
-        {
-            if (!m_objectiveList.Contains(a_objective))
+            objectiveList[0].gameObject.SetActive(true);
+            for (int i = 1; i < objectiveList.Count; i++)
             {
-                m_objectiveList.Add(a_objective);
+                objectiveList[i].gameObject.SetActive(false);
             }
         }
 
         public void UnregisterObjective(Objective a_objective)
         {
-            m_objectiveList.Remove(a_objective);
+            objectiveList.Remove(a_objective);
+
+            if (objectiveList.Count == 0)
+            {
+
+            }
+            else
+            {
+                objectiveList[0].gameObject.SetActive(true);
+            }
         }
     }
 }

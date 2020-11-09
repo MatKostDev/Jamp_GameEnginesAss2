@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 4519209172100257037}
   - component: {fileID: 655466543084608168}
   - component: {fileID: 3385677849723072098}
-  - component: {fileID: 7356370122387513769}
-  m_Layer: 0
+  - component: {fileID: 1083989966725339065}
+  m_Layer: 1
   m_Name: checkpoint_shader_object
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -80,8 +80,8 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!136 &7356370122387513769
-CapsuleCollider:
+--- !u!65 &1083989966725339065
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -90,7 +90,6 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.01
-  m_Height: 0.040909722
-  m_Direction: 2
-  m_Center: {x: 0, y: -9.843645e-16, z: -0.004552839}
+  serializedVersion: 2
+  m_Size: {x: 0.02, y: 0.020000005, z: 0.033842232}
+  m_Center: {x: 0, y: 2.7770907e-16, z: -0.0069211195}

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Jampacked.ProjectInca.Events;
 
 namespace Jampacked.ProjectInca
 {
@@ -18,7 +19,14 @@ namespace Jampacked.ProjectInca
 		
 		Color m_initialColor;
 
-		List<Color> originalColors = new List<Color>();
+		List<Color> originalColors = new List<Color>(); 
+        
+        EventDispatcher m_dispatcher;
+
+        private void Awake()
+        {
+            m_dispatcher = FindObjectOfType<EventDispatcher>();
+        }
 
 		void Start()
 		{
@@ -64,7 +72,8 @@ namespace Jampacked.ProjectInca
 
 		void OnDie()
 		{
-			m_health.currentHealth = m_health.maxHealth;
+            m_dispatcher.PostEvent(new EnemyDestroyedEvent());
+			Destroy(gameObject);
 		}
 
 		IEnumerator ColorChangeRoutine()

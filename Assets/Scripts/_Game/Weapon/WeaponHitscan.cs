@@ -21,6 +21,7 @@ namespace Jampacked.ProjectInca
 		{
 			//determine layer number based on layermask
 			m_bulletTrailLayerNumFPP = (int) Mathf.Log(bulletTrailLayerMaskFPP.value, 2);
+            currentReserveAmmo = maxReserveAmmo;
 		}
 
 		public override bool FireWeapon(
@@ -189,7 +190,7 @@ namespace Jampacked.ProjectInca
 				}
 			}
 
-			currentReserveAmmo -= m_currentClipAmmo - clipAmmoBeforeReload;
+            currentReserveAmmo = maxReserveAmmo;
 
 			m_isReloading = false;
 		}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 namespace Jampacked.ProjectInca
 {
@@ -49,6 +50,11 @@ namespace Jampacked.ProjectInca
 
 		private void Start()
 		{
+            if (!SceneManager.GetSceneByName("TutorialScene").isLoaded)
+            {
+                SceneManager.LoadScene("TutorialScene", LoadSceneMode.Additive);
+            }
+
 			m_initialFieldOfView = m_mainCamera.fieldOfView;
 
 			m_commandHandler.OnShoot += (a_held) =>

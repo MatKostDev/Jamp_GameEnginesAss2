@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Jampacked.ProjectInca
 {
+    [RequireComponent(typeof(Collider))]
     public class ReachAreaObjective : Objective
     {
         void OnTriggerEnter(Collider other)

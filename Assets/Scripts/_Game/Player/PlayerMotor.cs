@@ -18,6 +18,7 @@ namespace Jampacked.ProjectInca
 		private WallRunning m_wallRunning = null;
 
 		// TODO: Make these properties of PlayerMovementConfig
+        private const float CEILING_CHECK_RAY_DISTANCE = 0.05f;
 		private const float GROUNDED_VELOCITY_Y = -2f;
 
 		private const float COYOTE_TIME           = 0.1f;
@@ -176,7 +177,15 @@ namespace Jampacked.ProjectInca
 			m_characterController.Move(m_velocity * Time.deltaTime);
 
 			//reset vertical velocity if the player hits a ceiling
-			if ((m_characterController.collisionFlags & CollisionFlags.Above) != 0)
+            Vector3 topOfPlayer = m_moveTarget.position;
+            topOfPlayer.y += m_characterController.height * 0.5f;
+
+            if (Physics.Raycast(
+                m_moveTarget.position,
+                Vector3.up,
+                out RaycastHit ceilingCheckRay,
+                CEILING_CHECK_RAY_DISTANCE
+            ))
 			{
 				m_velocity.y = 0f;
 			}

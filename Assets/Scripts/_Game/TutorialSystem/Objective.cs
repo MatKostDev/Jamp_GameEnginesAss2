@@ -7,7 +7,11 @@ namespace Jampacked.ProjectInca
 {
     public class Objective : MonoBehaviour
     {
-        public GameObject nextObjectiveBlocker = null;
+        [SerializeField] 
+        GameObject nextObjectiveBlocker = null;
+
+        [SerializeField]
+        GameObject objectiveUIRoot;
 
         protected ObjectiveManager m_objectiveManager;
 
@@ -20,8 +24,23 @@ namespace Jampacked.ProjectInca
             }
         }
 
+        private void OnEnable()
+        {
+            if (objectiveUIRoot)
+                objectiveUIRoot.SetActive(true);
+        }
+
+        private void OnDisable()
+        {
+            if (objectiveUIRoot)
+                objectiveUIRoot.SetActive(false);
+        }
+
         protected void OnCompleted()
         {
+            if (objectiveUIRoot)
+                objectiveUIRoot.SetActive(false);
+
             if (nextObjectiveBlocker)
             {
                 Destroy(nextObjectiveBlocker);

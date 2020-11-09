@@ -7,10 +7,16 @@ namespace Jampacked.ProjectInca
 {
     public class ObjectiveManager : MonoBehaviour
     {
-        public List<Objective> objectiveList = new List<Objective>();
+        [SerializeField] 
+        List<Objective> objectiveList = new List<Objective>();
+
+        [SerializeField]
+        GameObject allObjectivesDoneUI;
 
         void Start()
         {
+            allObjectivesDoneUI.SetActive(false);
+
             objectiveList[0].gameObject.SetActive(true);
             for (int i = 1; i < objectiveList.Count; i++)
             {
@@ -24,7 +30,7 @@ namespace Jampacked.ProjectInca
 
             if (objectiveList.Count == 0)
             {
-
+                allObjectivesDoneUI.SetActive(true);
             }
             else
             {

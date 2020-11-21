@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: MainPlayerMovementProps
   m_EditorClassIdentifier: 
   motor:
+    general:
+      ceilingRayCheckDistance: 0.2
     grounded:
       accelerationRate: 80
       decelerationRate: 60
@@ -33,6 +35,11 @@ MonoBehaviour:
       maxInitialHorizontalSpeed: 20
       maxInitialVerticalSpeed: 7
       maxInitialDistanceFromWall: 0.7
+    followupProps:
+      maxInitialVelocityFactor: 0.5
+      sameWallCooldown: 1.2
+      normalTolerance: 5
+      interuptCheckDistance: 4
     duringProps:
       gravityMultiplier: 0.27
       slowDownRate: 0.15
@@ -44,9 +51,8 @@ MonoBehaviour:
       wallJumpHorizontalStrength: 12
       velocityKeptAfterWallJumpFactor: 0.5
     otherProps:
-      sameWallCooldown: 1.2
       cameraTiltAmount: 14
       cameraTiltSpeed: 18
-      nonWallLayers:
+      wallLayers:
         serializedVersion: 2
-        m_Bits: 3894
+        m_Bits: 1

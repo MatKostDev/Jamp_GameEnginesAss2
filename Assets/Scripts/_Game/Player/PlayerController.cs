@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 namespace Jampacked.ProjectInca
 {
@@ -18,6 +17,8 @@ namespace Jampacked.ProjectInca
 		private Transform m_aimTarget = null;
 
 		private PlayerMotor m_playerMotor = null;
+		
+		private WallRunning m_wallRunning = null;
 
 		private CharacterCommandHandler m_commandHandler = null;
 
@@ -41,6 +42,8 @@ namespace Jampacked.ProjectInca
 
 			m_playerMotor = refs.PlayerMotor;
 
+			m_wallRunning = refs.WallRunning;
+			
 			m_commandHandler = refs.CharacterCommandHandler;
 
 			m_mainCamera = refs.MainCamera;
@@ -50,11 +53,6 @@ namespace Jampacked.ProjectInca
 
 		private void Start()
 		{
-            if (!SceneManager.GetSceneByName("TutorialScene").isLoaded)
-            {
-                SceneManager.LoadScene("TutorialScene", LoadSceneMode.Additive);
-            }
-
 			m_initialFieldOfView = m_mainCamera.fieldOfView;
 
 			m_commandHandler.OnShoot += (a_held) =>
@@ -68,6 +66,14 @@ namespace Jampacked.ProjectInca
 			m_commandHandler.OnSwapWeapon += weaponHolder.SwapToWeaponSlot;
 
 			m_commandHandler.OnZoom += weaponHolder.AimActiveWeapon;
+
+			m_commandHandler.OnCrouch += (a_pressed) =>
+			{
+				if (a_pressed && m_wallRunning.IsWallRunning)
+				{
+					m_wallRunning.StopWallRun();
+				}
+			};
 		}
 
 		private void Update()

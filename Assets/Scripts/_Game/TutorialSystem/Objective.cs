@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Jampacked.ProjectInca.Events;
 
 namespace Jampacked.ProjectInca
 {
@@ -13,10 +13,14 @@ namespace Jampacked.ProjectInca
         [SerializeField]
         GameObject objectiveUIRoot;
 
+        protected EventDispatcher m_dispatcher;
+
         protected ObjectiveManager m_objectiveManager;
 
-        void Start()
+        void Awake()
         {
+            m_dispatcher = GameObject.Find("GlobalEventDispatcher").GetComponent<EventDispatcher>();
+
             m_objectiveManager = FindObjectOfType<ObjectiveManager>();
             if (!m_objectiveManager)
             {

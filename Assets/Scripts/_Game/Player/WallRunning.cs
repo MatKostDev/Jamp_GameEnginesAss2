@@ -23,8 +23,9 @@ namespace Jampacked.ProjectInca
 
 		private PlayerRotationController m_rotationController = null;
 
-		const int   NUM_PREVIOUS_WALL_OBJECTS_TO_STORE = 3;
-		const float MIN_DURATION_TO_COUNT_WALL_RUN     = 0.1f;
+		private const int   NUM_PREVIOUS_WALL_OBJECTS_TO_STORE        = 3;
+		private const int   NEW_WALL_NORMAL_OVERWRITE_FRAME_ALLOWANCE = 4;
+		private const float MIN_DURATION_TO_COUNT_WALL_RUN            = 0.1f;
 
 		private Transform m_moveTarget;
 
@@ -38,7 +39,13 @@ namespace Jampacked.ProjectInca
 		private float   m_lastTimeWallRunStarted;
 
 		private LinkedList<(GameObject ObjectRunOn, float TimeEnded)> m_lastWallRuns =
-			new LinkedList<(GameObject ObjectRunOn, float TimeEnded)>();
+			new LinkedList<(GameObject, float)>();
+
+		private Vector3    m_lastWallNormal;
+		private GameObject m_newWallHitObject;
+		private Vector3    m_newWallFirstHitNormal;
+		private int        m_newWallFirstHitFrame;
+		private bool       m_lastWallInterupted;
 
 		private bool m_isWallRunning = false;
 
@@ -52,18 +59,14 @@ namespace Jampacked.ProjectInca
 			get { return m_wallrunProps.Jump.wallJumpHeight; }
 		}
 
+		public GameObject LastObjectWallRunOn
+		{
+			get { return m_lastWallRuns.Last.Value.ObjectRunOn; }
+		}
+
 		public float LastTimeWallRun
 		{
-			get
-			{
-				if (m_lastWallRuns.Count > 0)
-				{
-					return m_lastWallRuns.Last.Value.TimeEnded;
-				} else
-				{
-					return -999f;
-				}
-			}
+			get { return m_lastWallRuns.Last.Value.TimeEnded; }
 		}
 
 		private void Awake()
@@ -77,18 +80,16 @@ namespace Jampacked.ProjectInca
 			m_rotationController = refs.RotationController;
 
 			m_wallrunProps = playerMovementProps.WallRun;
+			
+			m_lastWallRuns.AddLast((null, Mathf.NegativeInfinity));
 		}
 
-		void Start()
-		{
-		}
-
-		void Update()
+		private void Update()
 		{
 			UpdateCameraTilt();
 		}
 
-		void UpdateCameraTilt()
+		private void UpdateCameraTilt()
 		{
 			float currentTiltValue = m_rotationController.Roll;
 			if (Mathf.Approximately(currentTiltValue, m_cameraTiltTargetValue))
@@ -129,7 +130,8 @@ namespace Jampacked.ProjectInca
 				-m_moveTarget.right,
 				out RaycastHit leftHit,
 				m_wallrunProps.Startup.maxInitialDistanceFromWall,
-				~m_wallrunProps.Other.nonWallLayers
+				m_wallrunProps.Other.wallLayers,
+				QueryTriggerInteraction.Ignore
 			))
 			{
 				m_wallSide         = Side.Left;
@@ -142,7 +144,8 @@ namespace Jampacked.ProjectInca
 				m_moveTarget.right,
 				out RaycastHit rightHit,
 				m_wallrunProps.Startup.maxInitialDistanceFromWall,
-				~m_wallrunProps.Other.nonWallLayers
+				m_wallrunProps.Other.wallLayers,
+				QueryTriggerInteraction.Ignore
 			))
 			{
 				if (rightHit.distance < raycastHitDistance)
@@ -153,13 +156,54 @@ namespace Jampacked.ProjectInca
 				}
 			}
 
-			if (IsWallRunStartValid(wallHitGameObject, a_isGrounded, a_verticalAxis))
+			if (Physics.Raycast(
+				m_mainCamera.transform.position,
+				-m_lastWallNormal,
+				out RaycastHit interruptCheckHit,
+				m_wallrunProps.Followup.interuptCheckDistance,
+				m_wallrunProps.Other.wallLayers,
+				QueryTriggerInteraction.Ignore
+			))
+			{
+				GameObject interruptHitObject = interruptCheckHit.transform.gameObject;
+
+				bool isNewWall = false;
+				
+				//if this is the same wall we just ran on, keep updating the last normal
+				if (interruptHitObject == LastObjectWallRunOn)
+				{
+					//don't update normal if there was a large, sudden change, as it's probably on an edge
+					if (Vector3.Dot(m_lastWallNormal, interruptCheckHit.normal) > 0.8f)
+					{
+						m_lastWallNormal = interruptCheckHit.normal;
+					}
+				} else if (interruptHitObject != m_newWallHitObject)
+				{
+					isNewWall               = true;
+					m_newWallFirstHitFrame  = Time.frameCount;
+					m_newWallHitObject      = interruptHitObject;
+					m_newWallFirstHitNormal = interruptCheckHit.normal;
+				}
+
+				//check if this wall is new OR we're within the frame allowance to update the wall's normal
+				//this allows us to ensure we don't just hit the edge of a wall and count that as the first normal hit
+				if (isNewWall || (m_newWallFirstHitFrame + NEW_WALL_NORMAL_OVERWRITE_FRAME_ALLOWANCE > Time.frameCount))
+				{
+					m_newWallHitObject      = interruptHitObject;
+					m_newWallFirstHitNormal = interruptCheckHit.normal;
+				}
+			} else if (!m_lastWallInterupted)
+			{
+				m_lastWallInterupted = true;
+			}
+
+			if (IsWallRunStartValid(wallHitGameObject, wallHitNormal, a_isGrounded, a_verticalAxis))
 			{
 				StartWallRun(ref a_velocity, wallHitGameObject, wallHitNormal);
 			}
 		}
 
-		bool IsWallRunStartValid(GameObject a_wallObject, bool a_isGrounded, float a_verticalAxis)
+		private bool IsWallRunStartValid(GameObject a_wallObject, Vector3 a_normal, bool a_isGrounded, float a_verticalAxis)
 		{
 			//check if there is a wall to run on and if we're able to start a wall run
 			if (!a_wallObject
@@ -168,11 +212,12 @@ namespace Jampacked.ProjectInca
 			{
 				return false;
 			}
-
-            if (a_wallObject.GetComponent<Collider>().isTrigger)
-            {
-                return false;
-            }
+			
+			// Check if the player is facing away from the wall
+			if (Vector3.Dot(m_moveTarget.forward, a_normal) > Mathf.Cos((90 - 10) * Mathf.Deg2Rad))
+			{
+				return false;
+			}
 
 			//if ground was touched since the last wall run, a new wall run can be done without waiting for cooldown
 			if (m_touchedGroundSinceLastWallRun)
@@ -180,11 +225,30 @@ namespace Jampacked.ProjectInca
 				return true;
 			}
 
-            //check through previous wall runs and 
-			foreach (var previousWallRun in m_lastWallRuns)
+			if (!m_lastWallInterupted)
 			{
-				if (previousWallRun.ObjectRunOn                                          == a_wallObject
-				    && previousWallRun.TimeEnded + m_wallrunProps.Other.sameWallCooldown > Time.time)
+				//determine new wall normal, either from the parameter
+				//or from the normal we hit with a raycast earlier if it was the same wall
+				Vector3 newWallNormal = a_normal;
+				if (a_wallObject == m_newWallHitObject)
+				{
+					newWallNormal = m_newWallFirstHitNormal;
+				}
+
+				if (Vector3.Dot(m_lastWallNormal, newWallNormal) > Mathf.Cos(m_wallrunProps.Followup.normalTolerance * Mathf.Deg2Rad))
+				{
+					return false;
+				}
+			} else if (a_wallObject != LastObjectWallRunOn)
+			{
+				return true;
+			}
+
+			//check through previous wall runs to check if we ran on the wall and if the wall is off cooldown
+			foreach (var (objectRunOn, timeEnded) in m_lastWallRuns)
+			{
+				if (objectRunOn                                             == a_wallObject
+				    && timeEnded + m_wallrunProps.Followup.sameWallCooldown > Time.time)
 				{
 					return false;
 				}
@@ -193,7 +257,7 @@ namespace Jampacked.ProjectInca
 			return true;
 		}
 
-		void StartWallRun(ref Vector3 a_velocity, GameObject a_objectBeingWallRunOn, Vector3 a_surfaceNormal)
+		private void StartWallRun(ref Vector3 a_velocity, GameObject a_objectBeingWallRunOn, Vector3 a_surfaceNormal)
 		{
 			m_wallNormal = a_surfaceNormal;
 
@@ -241,12 +305,12 @@ namespace Jampacked.ProjectInca
 			}
 
 			//check if we recently finished a wall run
-			if (LastTimeWallRun + m_wallrunProps.Other.sameWallCooldown > Time.time
+			if (LastTimeWallRun + m_wallrunProps.Followup.sameWallCooldown > Time.time
 			    && !m_touchedGroundSinceLastWallRun)
 			{
 				float min    = m_wallrunProps.Startup.minInitialVerticalSpeed;
 				float max    = m_wallrunProps.Startup.maxInitialVerticalSpeed;
-				float factor = m_wallrunProps.Startup.maxFollowUpVerticalFactor;
+				float factor = m_wallrunProps.Followup.maxInitialVelocityFactor;
 
 				float maxAdjusted = Mathf.Lerp(min, max, factor);
 
@@ -264,54 +328,56 @@ namespace Jampacked.ProjectInca
 			//push player into the wall
 			a_velocity += -m_wallNormal * m_wallrunProps.During.stickToWallStrength;
 
-			StoreNewWallRun(a_objectBeingWallRunOn, Time.time);
+			StoreNewWallRun(a_objectBeingWallRunOn, a_surfaceNormal, Time.time);
 
 			m_lastTimeWallRunStarted        = Time.time;
 			m_touchedGroundSinceLastWallRun = false;
 		}
 
-		float GetInfluenceOnNewVelocity(Vector3 a_oldVelocity, Vector3 a_newMoveDirection)
+		private float GetInfluenceOnNewVelocity(Vector3 a_oldVelocity, Vector3 a_newMoveDirection)
 		{
 			Vector3 velocityDirectionXZ     = Vector3.Normalize(a_oldVelocity);
 			float   velocityDotNewDirection = Vector3.Dot(velocityDirectionXZ, a_newMoveDirection);
-			float wallRunVelocityInfluence = Mathf.Clamp(
-				velocityDotNewDirection * 2f,
-				0f,
-				1f
-			); //influence that the player's current velocity will have on the new (wall run) velocity, based on direction
+
+			//influence that the player's current velocity will have on the new (wall run) velocity, based on direction
+			float wallRunVelocityInfluence = Mathf.Clamp(velocityDotNewDirection * 2f, 0f, 1f);
 
 			return wallRunVelocityInfluence;
 		}
 
-		void StoreNewWallRun(GameObject a_wallObject, float a_time)
+		private void StoreNewWallRun(GameObject a_wallObject, Vector3 a_normal, float a_time)
 		{
 			m_lastWallRuns.AddLast((a_wallObject, a_time));
 			if (m_lastWallRuns.Count > NUM_PREVIOUS_WALL_OBJECTS_TO_STORE)
 			{
 				m_lastWallRuns.RemoveFirst();
 			}
+			m_lastWallNormal     = a_normal;
+			m_lastWallInterupted = false;
 		}
 
 		public void UpdateWallRunning(
 			ref Vector3 a_velocity,
 			float       a_gravityStrength,
 			bool        a_isGrounded,
-			float       a_horizontalAxis
+			Vector2     a_movementAxes
 		)
 		{
 			Vector3 lastFrameWallNormal = m_wallNormal;
 
 			//update last wall run time
-			m_lastWallRuns.Last.Value = (m_lastWallRuns.Last.Value.ObjectRunOn, Time.time);
+			var (obj, time)           = m_lastWallRuns.Last.Value;
+			m_lastWallRuns.Last.Value = (obj, Time.time);
 
 			//check if the player pushed the movement key away from the wall
-			const float tolerance = 0.5f;
-			if ((m_wallSide    == Side.Left  && a_horizontalAxis > tolerance)
-			    || (m_wallSide == Side.Right && a_horizontalAxis < -tolerance))
+			const float hTolerance = 0.5f;
+			const float vTolerance = 0.2f;
+			if ((m_wallSide    == Side.Left  && a_movementAxes.x > hTolerance)
+			    || (m_wallSide == Side.Right && a_movementAxes.x < -hTolerance))
 			{
 				PerformWallKickoff(ref a_velocity);
 				return;
-			} else if (a_isGrounded)
+			} else if (a_isGrounded || a_movementAxes.y < -vTolerance)
 			{
 				StopWallRun();
 				return;
@@ -323,10 +389,10 @@ namespace Jampacked.ProjectInca
 				    -m_wallNormal,
 				    out RaycastHit sideWallRay,
 				    m_wallrunProps.During.maxContinualDistanceFromWall,
-				    ~m_wallrunProps.Other.nonWallLayers
+				    m_wallrunProps.Other.wallLayers
 			    ))
 			{
-				if (a_velocity.y > 0)
+				if (!CheckToDiscardLastWallRun() && a_velocity.y > 0)
 				{
 					PerformWallVerticalBoost(ref a_velocity);
 				} else
@@ -334,18 +400,24 @@ namespace Jampacked.ProjectInca
 					StopWallRun();
 				}
 
-				CheckToDiscardLastWallRun();
-
 				return;
 			}
 
-            if (sideWallRay.collider.isTrigger)
+			//check if we transitioned onto a new wall, in which case we need to store it
+			if (sideWallRay.transform.gameObject != LastObjectWallRunOn)
 			{
-				StopWallRun();
-				return;
-            }
+				//check if the wall is just a trigger volume
+				if (IsWallTrigger(sideWallRay.collider))
+				{
+					StopWallRun();
+					return;
+				}
+				
+				StoreNewWallRun(sideWallRay.transform.gameObject, sideWallRay.normal, Time.time);
+			}
 
-			m_wallNormal = sideWallRay.normal;
+			m_wallNormal     = sideWallRay.normal;
+			m_lastWallNormal = sideWallRay.normal;
 
 			if (m_wallNormal != lastFrameWallNormal)
 			{
@@ -380,7 +452,7 @@ namespace Jampacked.ProjectInca
 				m_moveDirection,
 				out RaycastHit frontBlockerRay,
 				m_wallrunProps.During.distanceForwardToCheckForBlocker,
-				~m_wallrunProps.Other.nonWallLayers
+				m_wallrunProps.Other.wallLayers
 			))
 			{
 				StopWallRun();
@@ -424,20 +496,33 @@ namespace Jampacked.ProjectInca
 			StopWallRun();
 		}
 
-		void StopWallRun()
+		private bool IsWallTrigger(Collider a_wallCollider)
+		{
+			if (a_wallCollider.isTrigger)
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		public void StopWallRun()
 		{
 			m_isWallRunning = false;
 
 			m_cameraTiltTargetValue = 0f;
 		}
 
-		void CheckToDiscardLastWallRun()
+		private bool CheckToDiscardLastWallRun()
 		{
-			float lastWallRunDuration = m_lastWallRuns.Last.Value.TimeEnded - m_lastTimeWallRunStarted;
+			float lastWallRunDuration = LastTimeWallRun - m_lastTimeWallRunStarted;
 			if (lastWallRunDuration < MIN_DURATION_TO_COUNT_WALL_RUN)
 			{
 				m_lastWallRuns.RemoveLast();
+				return true;
 			}
+
+			return false;
 		}
 	}
 }

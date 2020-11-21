@@ -1,102 +1,108 @@
 using TMPro;
 using UnityEngine;
 
-[RequireComponent(typeof(TMP_Text))]
-public class DamageNumberDisplay : MonoBehaviour
+namespace Jampacked.ProjectInca
 {
-	[SerializeField]
-	Color regularColor = Color.black;
+	[RequireComponent(typeof(TMP_Text), typeof(SimplePhysics))]
+	public class DamageNumberDisplay : MonoBehaviour
+	{
+		[Header("Color")]
+		[SerializeField]
+		Color regularColor = Color.black;
 
-	[SerializeField]
-	Color weakSpotColor = Color.red;
+		[SerializeField]
+		Color weakSpotColor = Color.red;
+		
+		[Header("Velocity")]
+		[SerializeField]
+		float startSpeed = 5f;
+		
+		[SerializeField]
+		Vector3 minStartVelocity = Vector3.zero;
 
-	[SerializeField]
-	float sizeMultiplier = 1f;
+		[SerializeField]
+		Vector3 maxStartVelocity = Vector3.zero;
 
-	[SerializeField]
-	float fadeSpeed = 1f;
+		[Header("Other")]
+		[SerializeField]
+		float sizeMultiplier = 1f;
 
-	[SerializeField]
-	float initForceMultiplier = 10.0f;
+		[SerializeField]
+		float fadeSpeed = 1f;
 
-    [SerializeField]
-	float positionDeltaY = 1f;
-	
-	const float START_ALPHA = 2f;
-	const float END_ALPHA   = 0f;
-	
-	const float MAX_SCALE_VALUE = 0.35f;
-	const float MIN_SCALE_VALUE = 0.08f;
-	
-	Transform m_cameraTransform;
+		const float START_ALPHA = 2f;
+		const float END_ALPHA   = 0f;
 
-    TMP_Text m_textDisplay;
-    
-    Transform m_transform;
+		const float MAX_SCALE_VALUE = 0.3f;
+		const float MIN_SCALE_VALUE = 0.08f;
 
-	Rigidbody m_rigidBody;
-    
-    Vector3 m_initialPosition;
-    Vector3 m_endPosition;
-    
-    float m_interpolationParam;
-    
-    float m_startAlpha;
-    float m_endAlpha;
+		Transform     m_cameraTransform;
+		Transform     m_transform;
+		SimplePhysics m_physics;
+		TMP_Text      m_textDisplay;
 
-    public void Init(Transform a_cameraTransform, Vector3 a_hitPosition, float a_damageDealt, bool a_isWeakSpotHit)
-    {
-	    m_transform   = transform;
-	    m_textDisplay = GetComponent<TMP_Text>();
-	    m_rigidBody   = GetComponent<Rigidbody>();
-	    
-	    m_cameraTransform = a_cameraTransform;
+		float m_interpolationParam;
 
-	    m_transform.position = a_hitPosition;
+		public void Init(Transform a_cameraTransform, Vector3 a_hitPosition, float a_damageDealt, bool a_isWeakSpotHit)
+		{
+			m_transform   = transform;
+			m_textDisplay = GetComponent<TMP_Text>();
+			m_physics     = GetComponent<SimplePhysics>();
 
-	    m_initialPosition = a_hitPosition;
-	    m_endPosition     = m_initialPosition + new Vector3(0f, positionDeltaY, 0f);
+			m_cameraTransform = a_cameraTransform;
 
-	    m_textDisplay.text = Mathf.RoundToInt(a_damageDealt).ToString();
+			m_transform.position = a_hitPosition;
 
-	    if (a_isWeakSpotHit)
-	    {
-		    m_textDisplay.color = weakSpotColor;
-	    } else
-	    {
-		    m_textDisplay.color = regularColor;
-	    }
-	    
-	    m_rigidBody.AddForce( new Vector3(Random.Range(-0.7f, 0.7f), 1, Random.Range(-0.7f, 0.7f)) * initForceMultiplier, ForceMode.Impulse);
-	    //m_rigidBody.AddForce( Vector3.up * initForceMultiplier, ForceMode.Impulse);
-    }
+			m_textDisplay.text = Mathf.RoundToInt(a_damageDealt).ToString();
 
-    void Update()
-    {
-	    float distanceToViewer = Vector3.Distance(m_cameraTransform.position, m_transform.position);
-	    float newScaleValue    = distanceToViewer * sizeMultiplier;
+			if (a_isWeakSpotHit)
+			{
+				m_textDisplay.color = weakSpotColor;
+			} else
+			{
+				m_textDisplay.color = regularColor;
+			}
 
-	    newScaleValue = Mathf.Clamp(newScaleValue, MIN_SCALE_VALUE, MAX_SCALE_VALUE);
-	    
-	    m_transform.localScale = new Vector3(newScaleValue, newScaleValue, 1f);
+			Vector3 startVelocity = new Vector3
+			{
+				x = Random.Range(minStartVelocity.x, maxStartVelocity.x),
+				y = Random.Range(minStartVelocity.y, maxStartVelocity.y),
+				z = Random.Range(minStartVelocity.z, maxStartVelocity.z),
+			};
 
-	    //face the camera, this looks a bit jank because just doing it normally makes it look the opposite direction
-		m_transform.LookAt(2f * m_transform.position - m_cameraTransform.position);
-	    
-	    //m_transform.position = Vector3.Lerp(m_initialPosition, m_endPosition, m_interpolationParam);
+			startVelocity = startVelocity.normalized * startSpeed;
 
-	    float newAlpha = Mathf.Lerp(START_ALPHA, END_ALPHA, m_interpolationParam);
+			m_physics.Velocity = startVelocity;
+		}
 
-	    Color newColor = m_textDisplay.color;
-	    
-	    newColor.a          = newAlpha;
-	    m_textDisplay.color = newColor;
+		void Update()
+		{
+			Vector3 currentPosition = m_transform.position;
+			Vector3 cameraPosition  = m_cameraTransform.position;
+			
+			float distanceToViewer = Vector3.Distance(cameraPosition, currentPosition);
+			float newScaleValue    = distanceToViewer * sizeMultiplier;
 
-	    if (m_interpolationParam >= 1f)
-	    {
-		    Destroy(gameObject);
-	    }
-	    
-		m_interpolationParam += fadeSpeed * Time.deltaTime;
-    }
+			newScaleValue = Mathf.Clamp(newScaleValue, MIN_SCALE_VALUE, MAX_SCALE_VALUE);
+
+			m_transform.localScale = new Vector3(newScaleValue, newScaleValue, 1f);
+
+			//face the camera, this looks a bit jank because just doing it normally makes it look the opposite direction
+			m_transform.LookAt((2f * currentPosition) - cameraPosition);
+
+			float newAlpha = Mathf.Lerp(START_ALPHA, END_ALPHA, m_interpolationParam);
+
+			Color newColor = m_textDisplay.color;
+
+			newColor.a          = newAlpha;
+			m_textDisplay.color = newColor;
+
+			if (m_interpolationParam >= 1f)
+			{
+				Destroy(gameObject);
+			}
+
+			m_interpolationParam += fadeSpeed * Time.deltaTime;
+		}
+	}
 }

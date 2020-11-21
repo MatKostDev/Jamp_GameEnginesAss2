@@ -12,6 +12,8 @@ namespace Jampacked.ProjectInca
 	    public delegate void OnShootDelegate(bool a_held);
 
 	    public delegate bool OnZoomDelegate(bool a_zoomIn);
+		
+	    public delegate void OnCrouchDelegate(bool a_pressed);
 
 	    public abstract event OnReloadDelegate OnReload;
 
@@ -20,7 +22,9 @@ namespace Jampacked.ProjectInca
 	    public abstract event OnShootDelegate OnShoot;
 
 	    public abstract event OnZoomDelegate OnZoom;
-
+	    
+	    public abstract event OnCrouchDelegate OnCrouch;
+	    
 		bool m_jump = false;
 		public bool Jump
 		{
@@ -46,6 +50,8 @@ namespace Jampacked.ProjectInca
 		protected bool m_shotLastFrame = false;
 
 		protected abstract void OnJumpAction(InputAction.CallbackContext a_context);
+	    
+		protected abstract void OnCrouchAction(InputAction.CallbackContext a_context);
 	    
 		protected abstract void OnShootAction(InputAction.CallbackContext a_context);
 	    

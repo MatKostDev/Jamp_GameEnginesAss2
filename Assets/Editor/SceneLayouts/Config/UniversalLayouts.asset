@@ -1,0 +1,10 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!49 &4900000
+TextAsset:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UniversalLayouts
+  m_Script: '{"treatUniversalsAsActive":true,"universalScenes":[{"position":{"x":0.0,"y":0.0,"z":0.0},"rotation":{"x":0.0,"y":0.0,"z":0.0},"scene":{"fileID":102900000,"guid":"03eb939f67426714d9115e3627fa7b98","type":3}},{"position":{"x":0.0,"y":0.0,"z":0.0},"rotation":{"x":0.0,"y":0.0,"z":0.0},"scene":{"fileID":102900000,"guid":"049c17cdaa833964497476795f1ac7bf","type":3}}]}'

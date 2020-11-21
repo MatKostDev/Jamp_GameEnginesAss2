@@ -14,15 +14,11 @@ namespace Jampacked.ProjectInca
         [SerializeField]
         TMP_Text objectiveProgress;
 
-        EventDispatcher m_dispatcher;
-
         int m_enemiesDestroyed = 0;
 
-        private void Awake()
+        private void Start()
         {
-            m_dispatcher = FindObjectOfType<EventDispatcher>();
-
-            m_dispatcher.AddListener<EnemyDestroyedEvent>(OnEnemyDestroyed);
+            m_dispatcher.AddListener<TutorialEnemyKilledEvent>(OnEnemyDestroyed);
 
             objectiveProgress.text = "0 / " + numEnemiesToDestroy;
         }

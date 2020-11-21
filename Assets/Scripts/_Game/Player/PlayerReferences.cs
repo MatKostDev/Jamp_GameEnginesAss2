@@ -4,6 +4,12 @@ namespace Jampacked.ProjectInca
 {
 	public class PlayerReferences : MonoBehaviour
 	{
+		// Player's GameObject ID
+		public int PlayerObjectId
+		{
+			get { return gameObject.GetInstanceID(); }
+		}
+		
 		// Player's main rendering camera
 		public Camera MainCamera
 		{
@@ -68,6 +74,12 @@ namespace Jampacked.ProjectInca
 		public RecoilController RecoilController
 		{
 			get { return recoilController; }
+		}
+
+		// Holds weapon and acts as a messanger for active weapon actions
+		public WeaponHolder WeaponHolder
+		{
+			get { return weaponHolder; }
 		}
 
 		// Root transform for active weapon
@@ -156,6 +168,9 @@ namespace Jampacked.ProjectInca
 		private RecoilController recoilController = null;
 
 		[Header("Weapon")]
+		[SerializeField]
+		private WeaponHolder weaponHolder = null;
+		
 		[SerializeField]
 		private Transform activeWeaponRoot = null;
 

@@ -5,7 +5,10 @@ namespace Jampacked.ProjectInca
 {
 	public class WeaponHitscan : Weapon
 	{
-		[Header("Bullet Trail")]
+		[Header("Visual Effects")]
+		[SerializeField] 
+		ParticleSystem impactEffect = null;
+		
 		[SerializeField]
 		LineRenderer bulletTrailFPP = null;
 
@@ -17,11 +20,12 @@ namespace Jampacked.ProjectInca
 
 		int m_bulletTrailLayerNumFPP;
 
-		void Start()
+		protected override void Start()
 		{
+			base.Start();
+			
 			//determine layer number based on layermask
 			m_bulletTrailLayerNumFPP = (int) Mathf.Log(bulletTrailLayerMaskFPP.value, 2);
-            currentReserveAmmo = maxReserveAmmo;
 		}
 
 		public override bool FireWeapon(
@@ -35,13 +39,21 @@ namespace Jampacked.ProjectInca
 				return false;
 			}
 			
-			Vector3    bulletTrailEndPos;
-			RaycastHit hit;
-			if (Physics.Raycast(a_fireStartPosition, a_fireDirection, out hit, range, ~layersToIgnore))
+			Vector3 bulletTrailEndPos;
+			if (Physics.Raycast(
+				a_fireStartPosition,
+				a_fireDirection,
+				out var bulletRayHit,
+				range,
+				layersToTarget,
+				QueryTriggerInteraction.Ignore
+			))
 			{
-				bulletTrailEndPos = hit.point;
+				bulletTrailEndPos = bulletRayHit.point;
 
-				ProcessBulletHit(hit.transform.gameObject, hit.point);
+				CreateImpactEffect(bulletRayHit.point, bulletRayHit.normal);
+				
+				ProcessBulletHit(bulletRayHit.transform.gameObject, bulletRayHit.point);
 			} else //no hit
 			{
 				bulletTrailEndPos = a_fireStartPosition + (a_fireDirection * range);
@@ -55,13 +67,13 @@ namespace Jampacked.ProjectInca
 			if (bulletTrailFPP
 			    && Vector3.Distance(muzzleFPP.position, bulletTrailEndPos) > MIN_DISTANCE_FOR_BULLET_TRAIL)
 			{
-				DrawBulletTrail(
-					muzzleWorldPosFPP,
-					bulletTrailEndPos,
-					bulletTrailFPP.gameObject,
-					m_bulletTrailLayerNumFPP
-				);
-			}
+                DrawBulletTrail(
+                    muzzleWorldPosFPP,
+                    bulletTrailEndPos,
+                    bulletTrailFPP.gameObject,
+                    m_bulletTrailLayerNumFPP
+                );
+            }
 
 			if (a_isSingleShot)
 			{
@@ -127,6 +139,13 @@ namespace Jampacked.ProjectInca
 			}
 		}
 
+		void CreateImpactEffect(Vector3 a_hitPosition, Vector3 a_hitNormal)
+		{
+			var newImpactEffect = Instantiate(impactEffect, a_hitPosition, Quaternion.LookRotation(a_hitNormal));
+			
+			Destroy(newImpactEffect, 1f);
+		}
+
 		void DrawBulletTrail(
 			Vector3    a_startPos,
 			Vector3    a_endPos,
@@ -172,6 +191,17 @@ namespace Jampacked.ProjectInca
 			
 			yield return new WaitForSeconds(reloadDuration);
 
+			m_isReloading = false;
+
+			if (maxReserveAmmo == int.MaxValue)
+			{
+				m_currentClipAmmo = maxClipAmmo;
+				
+				m_holder.UpdateAmmoDisplays();
+				
+				yield break; //exit coroutine
+			}
+
 			int clipAmmoBeforeReload = m_currentClipAmmo;
 
 			if (m_currentClipAmmo + currentReserveAmmo < maxClipAmmo)
@@ -190,9 +220,9 @@ namespace Jampacked.ProjectInca
 				}
 			}
 
-            currentReserveAmmo = maxReserveAmmo;
-
-			m_isReloading = false;
+			currentReserveAmmo -= m_currentClipAmmo - clipAmmoBeforeReload;
+			
+			m_holder.UpdateAmmoDisplays();
 		}
 	}
 }

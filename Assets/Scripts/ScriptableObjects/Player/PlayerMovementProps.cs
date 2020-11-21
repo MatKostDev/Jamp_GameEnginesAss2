@@ -24,6 +24,13 @@ namespace Jampacked.ProjectInca
 		[Serializable]
 		public class PlayerMotorProps
 		{
+			// PlayerMotor properties that govern general movement
+			public GeneralProps General
+			{
+				get { return general; }
+				set { general = value; }
+			}
+			
 			// PlayerMotor properties that govern grounded movement
 			public MovementProps Grounded
 			{
@@ -45,6 +52,13 @@ namespace Jampacked.ProjectInca
 				set { verticalForceProps = value; }
 			}
 
+
+			[Serializable]
+			public class GeneralProps
+			{
+				public float ceilingRayCheckDistance = 0.0f;
+			}
+
 			[Serializable]
 			public class MovementProps
 			{
@@ -60,6 +74,9 @@ namespace Jampacked.ProjectInca
 				public float gravityStrength  = 0.0f;
 				public float terminalVelocity = 0.0f;
 			}
+			
+			[SerializeField]
+			private GeneralProps general = new GeneralProps();
 
 			[SerializeField]
 			private MovementProps grounded = new MovementProps();
@@ -79,6 +96,13 @@ namespace Jampacked.ProjectInca
 			{
 				get { return startupProps; }
 				set { startupProps = value; }
+			}
+
+			// WallRunning properties that govern subsequent wall runs without touching the ground
+			public FollowupProps Followup
+			{
+				get { return followupProps; }
+				set { followupProps = value; }
 			}
 
 			// WallRunning properties that govern during wallrun
@@ -111,9 +135,19 @@ namespace Jampacked.ProjectInca
 				public float maxInitialHorizontalSpeed  = 0.0f;
 				public float maxInitialVerticalSpeed    = 0.0f;
 				public float maxInitialDistanceFromWall = 0.0f;
+			}
 
+			[Serializable]
+			public class FollowupProps
+			{
 				[Range(0f, 1f)]
-				public float maxFollowUpVerticalFactor = 0.0f;
+				public float maxInitialVelocityFactor = 0.0f;
+
+				public float sameWallCooldown      = 0.0f;
+				
+				[Tooltip("The angle in degrees the followup wall normal has to be different from the initial wall")]
+				public float normalTolerance       = 0.0f;
+				public float interuptCheckDistance = 0.0f;
 			}
 
 			[Serializable]
@@ -139,14 +173,16 @@ namespace Jampacked.ProjectInca
 			[Serializable]
 			public class OtherProps
 			{
-				public float     sameWallCooldown = 0.0f;
 				public float     cameraTiltAmount = 0.0f;
 				public float     cameraTiltSpeed  = 0.0f;
-				public LayerMask nonWallLayers    = 0;
+				public LayerMask wallLayers       = 0;
 			}
 
 			[SerializeField]
 			private StartupProps startupProps = new StartupProps();
+
+			[SerializeField]
+			private FollowupProps followupProps = new FollowupProps();
 
 			[SerializeField]
 			private DuringProps duringProps = new DuringProps();
@@ -161,6 +197,11 @@ namespace Jampacked.ProjectInca
 		[SerializeField]
 		private PlayerMotorProps motor = new PlayerMotorProps()
 		{
+			General = new PlayerMotorProps.GeneralProps()
+			{
+				ceilingRayCheckDistance = 0.1f,
+			},
+			
 			Grounded = new PlayerMotorProps.MovementProps()
 			{
 				accelerationRate = 80f,
@@ -192,7 +233,13 @@ namespace Jampacked.ProjectInca
 				maxInitialHorizontalSpeed  = 20,
 				maxInitialVerticalSpeed    = 7,
 				maxInitialDistanceFromWall = 0.7f,
-				maxFollowUpVerticalFactor  = 0.5f,
+			},
+			Followup = new WallRunProps.FollowupProps()
+			{
+				maxInitialVelocityFactor = 0.5f,
+				normalTolerance           = 20f,
+				sameWallCooldown          = 1.2f,
+				interuptCheckDistance     = 4.0f,
 			},
 			During = new WallRunProps.DuringProps()
 			{
@@ -210,10 +257,9 @@ namespace Jampacked.ProjectInca
 			},
 			Other = new WallRunProps.OtherProps()
 			{
-				sameWallCooldown = 1.2f,
 				cameraTiltAmount = 14f,
 				cameraTiltSpeed  = 18f,
-				nonWallLayers    = 0,
+				wallLayers       = 0,
 			},
 		};
 	}

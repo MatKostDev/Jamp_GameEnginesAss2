@@ -13,8 +13,10 @@ namespace Jampacked.ProjectInca
 		[SerializeField]
 		float maxSpread = 0f;
 
-		void Start()
+		protected override void Start()
 		{
+			base.Start();
+			
 			Random.InitState(System.DateTime.Now.Millisecond); //seed random
 		}
 

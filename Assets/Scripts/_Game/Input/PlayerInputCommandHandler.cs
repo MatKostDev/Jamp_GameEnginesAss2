@@ -22,11 +22,13 @@ namespace Jampacked.ProjectInca
 		public override event OnShootDelegate OnShoot;
 
 		public override event OnZoomDelegate OnZoom;
+		
+		public override event OnCrouchDelegate OnCrouch;
 
-		InputType m_inputType = InputType.Keyboard;
+		private InputType m_inputType = InputType.Keyboard;
 
 		[SerializeField]
-		Vector2 mouseSensitivity = Vector2.one;
+		private Vector2 mouseSensitivity = Vector2.one;
 
 		public Vector2 MouseSensitivity
 		{
@@ -45,7 +47,7 @@ namespace Jampacked.ProjectInca
 		}
 
 		[SerializeField]
-		Vector2 gamepadSensitivity = Vector2.one;
+		private Vector2 gamepadSensitivity = Vector2.one;
 
 		public Vector2 GamepadSensitivity
 		{
@@ -63,22 +65,23 @@ namespace Jampacked.ProjectInca
 			}
 		}
 
-		PlayerInput m_playerInput = null;
+		private PlayerInput m_playerInput = null;
 
-		InputAction m_lookAction = null;
-		InputAction m_moveAction = null;
+		private InputAction m_lookAction = null;
+		private InputAction m_moveAction = null;
 
-		InputAction m_jumpAction = null;
+		private InputAction m_jumpAction   = null;
+		private InputAction m_crouchAction = null;
 
-		InputAction m_reloadAction      = null;
-		InputAction m_shootAction       = null;
-		InputAction m_weaponSwapAction1 = null;
-		InputAction m_weaponSwapAction2 = null;
-		InputAction m_weaponSwapAction3 = null;
-		InputAction m_weaponSwapAction4 = null;
-		InputAction m_zoomAction        = null;
+		private InputAction m_reloadAction      = null;
+		private InputAction m_shootAction       = null;
+		private InputAction m_weaponSwapAction1 = null;
+		private InputAction m_weaponSwapAction2 = null;
+		private InputAction m_weaponSwapAction3 = null;
+		private InputAction m_weaponSwapAction4 = null;
+		private InputAction m_zoomAction        = null;
 
-		void Start()
+		private void Start()
 		{
 			m_playerInput = GetComponent<PlayerInput>();
 
@@ -98,6 +101,9 @@ namespace Jampacked.ProjectInca
 
 			m_jumpAction = m_playerInput.actions[nameof(InputMaster.PlayerActions.Jump)];
 			m_jumpAction.started += OnJumpAction;
+			
+			m_crouchAction = m_playerInput.actions[nameof(InputMaster.PlayerActions.Crouch)];
+			m_crouchAction.performed += OnCrouchAction;
 
 			m_reloadAction = m_playerInput.actions[nameof(InputMaster.PlayerActions.Reload)];
 			m_reloadAction.started += OnReloadAction;
@@ -121,12 +127,12 @@ namespace Jampacked.ProjectInca
 			m_zoomAction.performed += OnZoomAction;
 		}
 
-		void OnControlsChanged(PlayerInput a_playerInput)
+		private void OnControlsChanged(PlayerInput a_playerInput)
 		{
 			m_inputType = a_playerInput.currentControlScheme == "Gamepad" ? InputType.Gamepad : InputType.Keyboard;
 		}
 
-		void Update()
+		private void Update()
 		{
 			MoveInput = m_moveAction.ReadValue<Vector2>();
 
@@ -164,6 +170,12 @@ namespace Jampacked.ProjectInca
 		protected override void OnJumpAction(InputAction.CallbackContext a_context)
 		{
 			Jump = true;
+		}
+		
+		protected override void OnCrouchAction(InputAction.CallbackContext a_context)
+		{
+			bool pressed = a_context.ReadValueAsButton();
+			OnCrouch?.Invoke(pressed);
 		}
 
 		protected override void OnShootAction(InputAction.CallbackContext a_context)

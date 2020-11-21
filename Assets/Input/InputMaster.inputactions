@@ -30,6 +30,14 @@
                     "interactions": ""
                 },
                 {
+                    "name": "Crouch",
+                    "type": "Button",
+                    "id": "55db654b-f276-48ae-9bbd-5743d5ebeae0",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)"
+                },
+                {
                     "name": "Shoot",
                     "type": "Button",
                     "id": "be4904ba-6b88-460c-af4b-4e61bc5de0c0",
@@ -370,6 +378,39 @@
                     "processors": "",
                     "groups": "DualShock",
                     "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "53a7c081-d0ec-4d4e-b3fd-471c5ec3de14",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f5f8c5d8-7215-4178-913f-24c898241196",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard",
+                    "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a051b3ed-92dd-48c4-91c2-3391180561c6",
+                    "path": "<Gamepad>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad;DualShock",
+                    "action": "Crouch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

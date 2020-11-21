@@ -9,6 +9,14 @@ namespace Jampacked.ProjectInca
 {
 	public abstract class Weapon : MonoBehaviour
 	{
+		public enum AmmoType
+		{
+			None,
+			AssaultRifle,
+			Shotgun,
+			MarksmanRifle,
+		}
+		
 		// TODO: Make a get only property
 		public WeaponSwayProps swayProps = null;
 
@@ -38,13 +46,17 @@ namespace Jampacked.ProjectInca
 		protected float range;
 
 		[SerializeField]
-		protected LayerMask layersToIgnore;
+		protected LayerMask layersToTarget;
 
 		[Header("Ammo")]
+		[SerializeField]
+		protected AmmoType ammoType = AmmoType.None;
+		
 		[SerializeField]
 		protected int currentReserveAmmo;
 
 		[SerializeField]
+		[Tooltip("Enter -1 for infinite ammo")]
 		protected int maxReserveAmmo;
 
 		[SerializeField]
@@ -98,7 +110,7 @@ namespace Jampacked.ProjectInca
 		protected bool m_isReloading       = false;
 		protected bool m_isAimingDownSight = false;
 
-		//protected WeaponHolder m_holder;
+		protected WeaponHolder m_holder;
 		//public WeaponHolder Holder
 		//{
 		//	set { m_holder = value; }
@@ -130,6 +142,11 @@ namespace Jampacked.ProjectInca
 		//	set { m_recoilControl = value; }
 		//}
 
+		public AmmoType WeaponAmmoType
+		{
+			get { return ammoType; }
+		}
+
 		public bool IsAutomatic
 		{
 			get { return isAutomatic; }
@@ -138,33 +155,51 @@ namespace Jampacked.ProjectInca
 		public int CurrentReserveAmmo
 		{
 			get { return currentReserveAmmo; }
-			set { currentReserveAmmo = value; }
+			set
+			{
+				currentReserveAmmo = Mathf.Min(value, maxReserveAmmo);
+			}
+		}
+
+		public int MaxReserveAmmo
+		{
+			get { return maxReserveAmmo; }
 		}
 
 		public int CurrentClipAmmo
 		{
 			get { return m_currentClipAmmo; }
-			set { m_currentClipAmmo = value; }
 		}
 
 		public int MaxClipAmmo
 		{
 			get { return maxClipAmmo; }
-			set { maxClipAmmo = value; }
 		}
 
 		private void Awake()
 		{
 			var refs = GetComponentInParent<PlayerReferences>();
+			
+			m_holder = refs.WeaponHolder;
+			
 			m_mainCamera = refs.MainCamera;
 			m_weaponCamera = refs.WeaponCamera;
 
 			m_playerController = refs.PlayerController;
 			m_recoilController = refs.RecoilController;
-
+			
 			m_firingCooldown = 60f / roundsPerMinute;
 
 			m_currentClipAmmo = maxClipAmmo;
+		}
+
+		protected virtual void Start()
+		{
+			if (maxReserveAmmo == -1)
+			{
+				maxReserveAmmo     = int.MaxValue;
+				currentReserveAmmo = int.MaxValue;
+			}
 
 			AnimationClip[] animClips = animatorFPP.runtimeAnimatorController.animationClips;
 			for (int i = 0; i < animClips.Length; i++)
@@ -175,10 +210,6 @@ namespace Jampacked.ProjectInca
 					break;
 				}
 			}
-		}
-
-		private void Start()
-		{
 		}
 
 		private void Update()

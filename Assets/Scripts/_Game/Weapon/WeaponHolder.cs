@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-
 using TMPro;
-
 using UnityEngine;
+using Jampacked.ProjectInca.Events;
 
 namespace Jampacked.ProjectInca
 {
@@ -47,6 +46,10 @@ namespace Jampacked.ProjectInca
 
 		private Weapon m_activeWeapon;
 
+		private GameObject m_ownerObject;
+
+		private EventDispatcher m_dispatcher;
+
 		public Weapon ActiveWeapon
 		{
 			get { return m_activeWeapon; }
@@ -62,6 +65,8 @@ namespace Jampacked.ProjectInca
 			m_transform = transform;
 
 			var refs = GetComponentInParent<PlayerReferences>();
+
+			m_ownerObject = refs.gameObject;
 
 			m_playerController = refs.PlayerController;
 			m_recoilController = refs.RecoilController;
@@ -79,6 +84,8 @@ namespace Jampacked.ProjectInca
 
 		private void Start()
 		{
+			m_dispatcher = GameObject.Find("GlobalEventDispatcher").GetComponent<EventDispatcher>();
+			
 			foreach (Weapon weapon in carriedWeapons)
 			{
 				SetWeaponProperties(weapon);
@@ -88,25 +95,58 @@ namespace Jampacked.ProjectInca
 
 			SwapToWeaponSlot(m_activeWeaponIndex);
 
-			//m_activeWeapon = carriedWeapons[m_activeWeaponIndex];
-			//m_activeWeapon.gameObject.SetActive(true);
+			m_dispatcher.AddListener<PickUpAmmoEvent>(OnAmmoPickedUp);
+			
+			UpdateAmmoDisplays();
 		}
 
-		private void Update()
+		private void OnDestroy()
 		{
-			currentReserveAmmoDisplay.text = m_activeWeapon.CurrentReserveAmmo.ToString();
-			currentClipAmmoDisplay.text    = m_activeWeapon.CurrentClipAmmo.ToString();
-			maxClipAmmoDisplay.text        = m_activeWeapon.MaxClipAmmo.ToString();
+			m_dispatcher.RemoveListener<PickUpAmmoEvent>(OnAmmoPickedUp);
+		}
+
+		public void UpdateAmmoDisplays()
+		{
+			currentClipAmmoDisplay.text = m_activeWeapon.CurrentClipAmmo.ToString();
+			maxClipAmmoDisplay.text     = m_activeWeapon.MaxClipAmmo.ToString();
+
+			if (m_activeWeapon.MaxReserveAmmo == int.MaxValue)
+			{
+				currentReserveAmmoDisplay.text = "∞";
+			} else
+			{
+				currentReserveAmmoDisplay.text = m_activeWeapon.CurrentReserveAmmo.ToString();
+			}
+		}
+
+		private void OnAmmoPickedUp(in Events.Event a_evt)
+		{
+			if (!(a_evt is PickUpAmmoEvent pickUpAmmoEvent))
+			{
+				return;
+			}
+			if (pickUpAmmoEvent.playerObjectId != m_ownerObject.GetInstanceID())
+			{
+				return;
+			}
+			
+			foreach (var weapon in carriedWeapons)
+			{
+				if (weapon.WeaponAmmoType != pickUpAmmoEvent.ammoType)
+				{
+					continue;
+				}
+				
+				weapon.CurrentReserveAmmo += pickUpAmmoEvent.ammoAmount;
+				break;
+			}
+
+			UpdateAmmoDisplays();
 		}
 
 		private void SetWeaponProperties(Weapon a_weapon)
 		{
-			// TODO: move all this into a class to minimize the assignments here?
-			//a_weapon.Holder            = this;
 			a_weapon.WeaponAudioSource = weaponAudioSource;
-			//a_weapon.MainCamera        = m_mainCamera;
-			//a_weapon.WeaponCamera      = m_weaponCamera;
-			//a_weapon.RecoilControl     = m_recoilController;
 
 			a_weapon.transform.parent = transform;
 		}
@@ -123,15 +163,14 @@ namespace Jampacked.ProjectInca
 			}
 		}
 
-		// Todo [Mat]: Consider changing the return type to void? The callbacks will never utilize the bools
-		public bool FireActiveWeapon(Vector3 a_fireStartPosition, Vector3 a_fireDirection, bool a_isFireHeldDown)
+		public void FireActiveWeapon(Vector3 a_fireStartPosition, Vector3 a_fireDirection, bool a_isFireHeldDown)
 		{
 			if (!a_isFireHeldDown || (a_isFireHeldDown && m_activeWeapon.IsAutomatic))
 			{
-				return m_activeWeapon.FireWeapon(a_fireStartPosition, a_fireDirection);
+				m_activeWeapon.FireWeapon(a_fireStartPosition, a_fireDirection);
 			}
 
-			return false;
+			UpdateAmmoDisplays();
 		}
 
 		public bool ReloadActiveWeapon()
@@ -200,6 +239,8 @@ namespace Jampacked.ProjectInca
 				m_bobbingController.BobbingProps = newWeapon.swayProps.Bobbing;
 
 			}
+			
+			UpdateAmmoDisplays();
 		}
 	}
 }

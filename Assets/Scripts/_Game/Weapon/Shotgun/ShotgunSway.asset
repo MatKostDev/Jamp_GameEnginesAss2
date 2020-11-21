@@ -12,21 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80f86a7968f47b142a07724a30bd81c2, type: 3}
   m_Name: ShotgunSway
   m_EditorClassIdentifier: 
-  positionalSmoothingStrength: 0.08
-  rotationalSmoothingStrength: 0.06
+  positionalSmoothingStrength: 0.1
+  rotationalSmoothingStrength: 0.1
   lookPositional:
-    swayStrength: {x: 0.04, y: 0.04}
-    maxSway: {x: 0.03, y: 0.03}
+    swayStrength: {x: 0.005, y: 0.005}
+    maxSway: {x: 0.005, y: 0.005}
   movePositional:
-    swayStrength: {x: 0.03, y: 0.04, z: 0.05}
-    maxSway: {x: 0.05, y: 0.037, z: 0.08}
+    swayStrength: {x: 0.01, y: 0.01, z: 0.025}
+    maxSway: {x: 0.013, y: 0.008, z: 0.04}
   lookRotational:
-    swayStrength: {x: 4.5, y: 5.8}
-    maxSway: {x: 2.7, y: 2.7}
+    swayStrength: {x: 2.2, y: 3.3}
+    maxSway: {x: 1.6, y: 2}
   moveRotational:
-    swayStrength: {x: 2.7, y: 4.4, z: 0.6}
-    maxSway: {x: 4.4, y: 2.8, z: 1}
+    swayStrength: {x: 2.7, y: 3.4, z: 0.6}
+    maxSway: {x: 4.4, y: 2, z: 1}
   bobbing:
     speed: 5.2
-    positionalAmount: 0.1
+    positionalAmount: 0.0033
     rotationalAmount: 0.7

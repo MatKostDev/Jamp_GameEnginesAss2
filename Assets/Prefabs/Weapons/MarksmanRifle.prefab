@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4663121612663869976
+--- !u!1 &3648900919933709677
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,46 +8,45 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4663121612663869977}
-  - component: {fileID: 4663121612663869980}
-  - component: {fileID: 4663121612663869979}
-  - component: {fileID: 4663121612663869978}
+  - component: {fileID: 4172673708446382039}
+  - component: {fileID: 1028944095558629490}
+  - component: {fileID: 3000378656956681400}
   m_Layer: 11
-  m_Name: MarksmanRifleModel
+  m_Name: CS5DropModel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4663121612663869977
+--- !u!4 &4172673708446382039
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4663121612663869976}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_GameObject: {fileID: 3648900919933709677}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -0.054864805, y: -0.13292037, z: 0.035148248}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 4663121612847457130}
+  m_Father: {fileID: 6704898371881739152}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &4663121612663869980
+--- !u!33 &1028944095558629490
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4663121612663869976}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &4663121612663869979
+  m_GameObject: {fileID: 3648900919933709677}
+  m_Mesh: {fileID: -386731530326178724, guid: 477d83be96ad74c49986ead0f935e8a4, type: 3}
+--- !u!23 &3000378656956681400
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4663121612663869976}
+  m_GameObject: {fileID: 3648900919933709677}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -56,10 +55,11 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 4147aacefe16b514bb65d04e100b82ec, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -80,20 +80,8 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &4663121612663869978
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4663121612663869976}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &4663121612793074461
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &6704898371827094503
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -101,7 +89,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4663121612793074462}
+  - component: {fileID: 6704898371827094500}
   m_Layer: 11
   m_Name: MuzzleFPP
   m_TagString: Untagged
@@ -109,21 +97,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4663121612793074462
+--- !u!4 &6704898371827094500
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4663121612793074461}
+  m_GameObject: {fileID: 6704898371827094503}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.484, y: 0.07, z: 0}
+  m_LocalPosition: {x: -1.181, y: 0.07, z: -0.003}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 4663121612858580340}
+  m_Father: {fileID: 6704898371892731278}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4663121612847457129
+--- !u!1 &6704898371881739155
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -131,7 +119,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4663121612847457130}
+  - component: {fileID: 6704898371881739152}
   m_Layer: 11
   m_Name: MarksmanRifleModelRoot
   m_TagString: Untagged
@@ -139,22 +127,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4663121612847457130
+--- !u!4 &6704898371881739152
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4663121612847457129}
+  m_GameObject: {fileID: 6704898371881739155}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4663121612663869977}
-  m_Father: {fileID: 4663121612858580340}
+  - {fileID: 4172673708446382039}
+  m_Father: {fileID: 6704898371892731278}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4663121612858580339
+--- !u!1 &6704898371892731273
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -162,8 +150,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4663121612858580340}
-  - component: {fileID: 4663121612858580341}
+  - component: {fileID: 6704898371892731278}
+  - component: {fileID: 6704898371892731279}
   m_Layer: 11
   m_Name: MarksmanRifleFPP
   m_TagString: Untagged
@@ -171,30 +159,30 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4663121612858580340
+--- !u!4 &6704898371892731278
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4663121612858580339}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.04, y: -0.012, z: -0.017}
-  m_LocalScale: {x: 0.1, y: 0.005, z: 0.005}
+  m_GameObject: {fileID: 6704898371892731273}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0.21, y: -0.048, z: -0.04}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_Children:
-  - {fileID: 4663121612847457130}
-  - {fileID: 4663121612793074462}
-  m_Father: {fileID: 4663121614475653318}
+  - {fileID: 6704898371881739152}
+  - {fileID: 6704898371827094500}
+  m_Father: {fileID: 6704898373480575036}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &4663121612858580341
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!95 &6704898371892731279
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4663121612858580339}
+  m_GameObject: {fileID: 6704898371892731273}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: f9d7daa36d4dca948b629ecdbb7285b2, type: 2}
@@ -206,7 +194,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!1 &4663121613076991399
+--- !u!1 &6704898372077456733
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -214,7 +202,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4663121613076991400}
+  - component: {fileID: 6704898372077456722}
   m_Layer: 9
   m_Name: MarksmanRifleTPP
   m_TagString: Untagged
@@ -222,21 +210,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4663121613076991400
+--- !u!4 &6704898372077456722
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4663121613076991399}
+  m_GameObject: {fileID: 6704898372077456733}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 4663121614475653318}
+  m_Father: {fileID: 6704898373480575036}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &4663121614475653317
+--- !u!1 &6704898373480575039
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -244,8 +232,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4663121614475653318}
-  - component: {fileID: 4663121614475653319}
+  - component: {fileID: 6704898373480575036}
+  - component: {fileID: 6704898373480575037}
   m_Layer: 0
   m_Name: MarksmanRifle
   m_TagString: Untagged
@@ -253,46 +241,47 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4663121614475653318
+--- !u!4 &6704898373480575036
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4663121614475653317}
+  m_GameObject: {fileID: 6704898373480575039}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4663121612858580340}
-  - {fileID: 4663121613076991400}
+  - {fileID: 6704898371892731278}
+  - {fileID: 6704898372077456722}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4663121614475653319
+--- !u!114 &6704898373480575037
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4663121614475653317}
+  m_GameObject: {fileID: 6704898373480575039}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5a6ef06e03aa0374da50a7071e62afd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   swayProps: {fileID: 11400000, guid: 0206e954133e8d544a5fe462043bc8c0, type: 2}
-  fppTransform: {fileID: 4663121612858580340}
+  fppTransform: {fileID: 6704898371892731278}
   roundsPerMinute: 75
   isAutomatic: 0
-  muzzleFPP: {fileID: 4663121612793074462}
+  muzzleFPP: {fileID: 6704898371827094500}
   muzzleTPP: {fileID: 0}
-  damagePerHit: 40
+  damagePerHit: 50
   weakSpotMultiplier: 1.5
   range: 300
-  layersToIgnore:
+  layersToTarget:
     serializedVersion: 2
-    m_Bits: 3894
+    m_Bits: 32769
+  ammoType: 3
   currentReserveAmmo: 60
   maxReserveAmmo: 100
   maxClipAmmo: 8
@@ -304,9 +293,11 @@ MonoBehaviour:
   canAimDownSight: 1
   aimDownSightZoomFactor: 2
   fireAudioClip: {fileID: 8300000, guid: 8f2adebb121201340814fd65cb061331, type: 3}
-  animatorFPP: {fileID: 4663121612858580341}
+  animatorFPP: {fileID: 6704898371892731279}
   animatorTPP: {fileID: 0}
   damageNumberDisplayPrefab: {fileID: 6576940463598609215, guid: 8306ed1aff73cd34481d4b685ac41888,
+    type: 3}
+  impactEffect: {fileID: 9035175530986637587, guid: 000885205cafb984abbc5912d54b43cc,
     type: 3}
   bulletTrailFPP: {fileID: 6411677855791286828, guid: c32fcff607433224f9555b88f0e2e52d,
     type: 3}

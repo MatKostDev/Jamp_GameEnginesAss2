@@ -11,14 +11,9 @@ namespace Jampacked.ProjectInca
 
 		private PlayerMovementProps.PlayerMotorProps m_motorProps;
 
-		//[Header("Wall Running")]
-		//[SerializeField]
-		//WallRunning wallRunning = null;
-
 		private WallRunning m_wallRunning = null;
 
 		// TODO: Make these properties of PlayerMovementConfig
-        private const float CEILING_CHECK_RAY_DISTANCE = 0.05f;
 		private const float GROUNDED_VELOCITY_Y = -2f;
 
 		private const float COYOTE_TIME           = 0.1f;
@@ -45,6 +40,8 @@ namespace Jampacked.ProjectInca
 
 		private float m_jumpVelocityY;
 
+		private float m_topOfPlayerOffsetY;
+			
 		private Vector3 m_velocity;
 
 		public Vector3 Velocity
@@ -105,6 +102,8 @@ namespace Jampacked.ProjectInca
 			m_wallRunning = refs.WallRunning;
 
 			m_motorProps = playerMovementProps.Motor;
+
+			m_topOfPlayerOffsetY = (m_characterController.height * 0.5f) + 0.01f;
 		}
 
 		private void Start()
@@ -133,7 +132,7 @@ namespace Jampacked.ProjectInca
 					ref m_velocity,
 					m_motorProps.VerticalForces.gravityStrength,
 					m_isGrounded,
-					horizontalAxis
+					a_inputAxes
 				);
 			} else //is NOT wall running
 			{
@@ -175,17 +174,20 @@ namespace Jampacked.ProjectInca
 			m_velocity.y = Mathf.Max(m_velocity.y, -m_motorProps.VerticalForces.terminalVelocity);
 
 			m_characterController.Move(m_velocity * Time.deltaTime);
-
+			
 			//reset vertical velocity if the player hits a ceiling
-            Vector3 topOfPlayer = m_moveTarget.position;
-            topOfPlayer.y += m_characterController.height * 0.5f;
-
-            if (Physics.Raycast(
-                m_moveTarget.position,
-                Vector3.up,
-                out RaycastHit ceilingCheckRay,
-                CEILING_CHECK_RAY_DISTANCE
-            ))
+			Vector3 pointAtTopOfPlayer = transform.position;
+			pointAtTopOfPlayer.y += m_topOfPlayerOffsetY;
+			
+			if (m_velocity.y > 0f
+			    && Physics.Raycast(
+				pointAtTopOfPlayer,
+				Vector3.up,
+				out var ceilingCheckHit,
+				m_motorProps.General.ceilingRayCheckDistance,
+				~0,
+				QueryTriggerInteraction.Ignore)
+			)
 			{
 				m_velocity.y = 0f;
 			}

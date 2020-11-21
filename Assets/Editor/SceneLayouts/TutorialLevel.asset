@@ -7,4 +7,4 @@ TextAsset:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: TutorialLevel
-  m_Script: '{"scenes":[{"fileID":102900000,"guid":"03eb939f67426714d9115e3627fa7b98","type":3},{"fileID":102900000,"guid":"24d010060d705dc45af2d426bc9c3ad4","type":3},{"fileID":102900000,"guid":"631312dd42aaabd48a30534bd3c5b632","type":3}]}'
+  m_Script: '{"scenes":[{"fileID":102900000,"guid":"03eb939f67426714d9115e3627fa7b98","type":3},{"fileID":102900000,"guid":"24d010060d705dc45af2d426bc9c3ad4","type":3}]}'

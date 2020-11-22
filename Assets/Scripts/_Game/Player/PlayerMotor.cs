@@ -44,6 +44,8 @@ namespace Jampacked.ProjectInca
 			
 		private Vector3 m_velocity;
 
+        private Vector3 m_startPosition;
+
 		public Vector3 Velocity
 		{
 			get { return m_velocity; }
@@ -110,7 +112,9 @@ namespace Jampacked.ProjectInca
 		{
 			UpdateJumpVelocityY(m_motorProps.VerticalForces.jumpHeight);
 			m_wallRunning.SetWallJumpHeight(m_wallRunning.WallJumpHeight, m_motorProps.VerticalForces.gravityStrength);
-		}
+
+            m_startPosition = m_moveTarget.position;
+        }
 
 		public void Move(Vector2 a_inputAxes, bool a_jump)
 		{
@@ -195,8 +199,10 @@ namespace Jampacked.ProjectInca
 			//after standard movement stuff is done, check if the player should be glued to a slope
 			PerformOnSlopeLogic();
 
-			//Debug.Log("SPEED: " + new Vector3(m_velocity.x, 0f, m_velocity.z).magnitude);
-		}
+            PerformOutOfBoundsCheck();
+
+            //Debug.Log("SPEED: " + new Vector3(m_velocity.x, 0f, m_velocity.z).magnitude);
+        }
 
 		private void PerformGroundCheck()
 		{
@@ -314,5 +320,13 @@ namespace Jampacked.ProjectInca
 				}
 			}
 		}
+
+        private void PerformOutOfBoundsCheck()
+        {
+            if (m_moveTarget.position.y < -50f)
+            {
+                m_moveTarget.position = m_startPosition;
+            }
+        }
 	}
 }

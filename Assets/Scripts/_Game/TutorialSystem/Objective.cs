@@ -50,7 +50,8 @@ namespace Jampacked.ProjectInca
                 Destroy(nextObjectiveBlocker);
             }
 
-            m_objectiveManager.UnregisterObjective(this);
+            m_dispatcher.PostEvent(new ObjectiveCompletedEvent());
+
             Destroy(gameObject);
         }
     }

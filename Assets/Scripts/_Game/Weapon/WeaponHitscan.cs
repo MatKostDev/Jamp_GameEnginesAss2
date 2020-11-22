@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using Jampacked.ProjectInca.Events;
 
 namespace Jampacked.ProjectInca
 {
@@ -20,8 +21,12 @@ namespace Jampacked.ProjectInca
 
 		int m_bulletTrailLayerNumFPP;
 
+        EventDispatcher m_dispatcher;
+
 		protected override void Start()
 		{
+            m_dispatcher = GameObject.Find("GlobalEventDispatcher").GetComponent<EventDispatcher>();
+
 			base.Start();
 			
 			//determine layer number based on layermask
@@ -38,6 +43,8 @@ namespace Jampacked.ProjectInca
 			{
 				return false;
 			}
+
+            bool wasEnemyHit = false;
 			
 			Vector3 bulletTrailEndPos;
 			if (Physics.Raycast(
@@ -52,12 +59,21 @@ namespace Jampacked.ProjectInca
 				bulletTrailEndPos = bulletRayHit.point;
 
 				CreateImpactEffect(bulletRayHit.point, bulletRayHit.normal);
-				
-				ProcessBulletHit(bulletRayHit.transform.gameObject, bulletRayHit.point);
+
+                if (ProcessBulletHit(bulletRayHit.transform.gameObject, bulletRayHit.point))
+                {
+                    wasEnemyHit = true;
+                }
 			} else //no hit
 			{
 				bulletTrailEndPos = a_fireStartPosition + (a_fireDirection * range);
 			}
+
+            var firedEvent = new WeaponFiredEvent()
+            {
+                didHitEnemy = wasEnemyHit,
+            };
+            m_dispatcher.PostEvent(firedEvent);
 
 			Vector3 muzzleScreenPosFPP = m_weaponCamera.WorldToScreenPoint(muzzleFPP.position);
 			Vector3 muzzleWorldPosFPP  = m_mainCamera.ScreenToWorldPoint(muzzleScreenPosFPP);
@@ -99,7 +115,7 @@ namespace Jampacked.ProjectInca
 			return true;
 		}
 
-		void ProcessBulletHit(GameObject a_objectHit, Vector3 a_hitPosition)
+		bool ProcessBulletHit(GameObject a_objectHit, Vector3 a_hitPosition)
 		{
 			Health     objectHitHealth;
 			GameObject objectWithHealth = a_objectHit;
@@ -136,8 +152,12 @@ namespace Jampacked.ProjectInca
 				objectHitHealth.TakeDamage(damageToInflict);
 				
 				CreateDamageNumberPopup(a_hitPosition, damageToInflict, didHitWeakSpot);
-			}
-		}
+
+                return true;
+            }
+
+            return false;
+        }
 
 		void CreateImpactEffect(Vector3 a_hitPosition, Vector3 a_hitNormal)
 		{

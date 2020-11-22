@@ -163,6 +163,12 @@ namespace Jampacked.ProjectInca
 			m_colorFlash.StartColorFlash();
 
 			m_tookDamageThisFrame = true;
+
+            var damagedEvent = new EnemyDamagedEvent()
+            {
+                damageDealt = a_damageAmount,
+            };
+            m_dispatcher.PostEvent(damagedEvent);
 		}
 
 		void OnDie()

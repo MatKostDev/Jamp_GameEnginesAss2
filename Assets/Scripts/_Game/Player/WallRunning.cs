@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-
+﻿using System;
+using System.Collections.Generic;
+using Jampacked.ProjectInca.Events;
 using UnityEngine;
 
 namespace Jampacked.ProjectInca
@@ -49,6 +50,8 @@ namespace Jampacked.ProjectInca
 
 		private bool m_isWallRunning = false;
 
+        EventDispatcher m_dispatcher;
+
 		public bool IsWallRunning
 		{
 			get { return m_isWallRunning; }
@@ -71,7 +74,7 @@ namespace Jampacked.ProjectInca
 
 		private void Awake()
 		{
-			var refs = GetComponentInParent<PlayerReferences>();
+            var refs = GetComponentInParent<PlayerReferences>();
 
 			m_moveTarget = refs.MoveTarget;
 
@@ -84,7 +87,12 @@ namespace Jampacked.ProjectInca
 			m_lastWallRuns.AddLast((null, Mathf.NegativeInfinity));
 		}
 
-		private void Update()
+        private void Start()
+		{
+			m_dispatcher = GameObject.Find("GlobalEventDispatcher").GetComponent<EventDispatcher>();
+		}
+
+        private void Update()
 		{
 			UpdateCameraTilt();
 		}
@@ -332,6 +340,8 @@ namespace Jampacked.ProjectInca
 
 			m_lastTimeWallRunStarted        = Time.time;
 			m_touchedGroundSinceLastWallRun = false;
+
+            m_dispatcher.PostEvent(new WallRunStartedEvent());
 		}
 
 		private float GetInfluenceOnNewVelocity(Vector3 a_oldVelocity, Vector3 a_newMoveDirection)

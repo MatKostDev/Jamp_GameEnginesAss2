@@ -97,10 +97,6 @@ namespace Jampacked.ProjectInca
 		[SerializeField]
 		protected Animator animatorTPP;
 
-		[Header("Damage Number Display")]
-		[SerializeField]
-		protected DamageNumberDisplay damageNumberDisplayPrefab;
-
 		protected float m_lastTimeFired = -999f;
 		protected float m_firingCooldown;
 		protected float m_firingDuration;
@@ -260,9 +256,11 @@ namespace Jampacked.ProjectInca
 
 		protected void CreateDamageNumberPopup(Vector3 a_hitPosition, float a_damageDealt, bool a_isWeakSpotHit)
 		{
-			DamageNumberDisplay newDamageNumberDisplay = Instantiate(damageNumberDisplayPrefab);
+            GameObject newObject = DamageNumberPooler.Instance.GetObject();
 
-			newDamageNumberDisplay.Init(m_mainCamera.transform, a_hitPosition, a_damageDealt, a_isWeakSpotHit);
+            DamageNumberDisplay newDisplay = newObject.GetComponent<DamageNumberDisplay>();
+
+            newDisplay.Init(m_mainCamera.transform, a_hitPosition, a_damageDealt, a_isWeakSpotHit);
 		}
 
 		public abstract bool FireWeapon(

@@ -51,6 +51,8 @@ namespace Jampacked.ProjectInca
 
 			m_cameraTransform = a_cameraTransform;
 
+            m_interpolationParam = 0f;
+
 			m_transform.position = a_hitPosition;
 
 			m_textDisplay.text = Mathf.RoundToInt(a_damageDealt).ToString();
@@ -99,7 +101,7 @@ namespace Jampacked.ProjectInca
 
 			if (m_interpolationParam >= 1f)
 			{
-				Destroy(gameObject);
+				DamageNumberPooler.Instance.ResetObject(gameObject);
 			}
 
 			m_interpolationParam += fadeSpeed * Time.deltaTime;

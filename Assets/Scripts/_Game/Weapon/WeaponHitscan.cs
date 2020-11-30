@@ -6,17 +6,10 @@ namespace Jampacked.ProjectInca
 {
 	public class WeaponHitscan : Weapon
 	{
-		[Header("Visual Effects")]
-		[SerializeField] 
-		ParticleSystem impactEffect = null;
-		
-		[SerializeField]
-		LineRenderer bulletTrailFPP = null;
-
 		[SerializeField]
 		LayerMask bulletTrailLayerMaskFPP;
 
-		const float BULLET_TRAIL_LIFETIME         = 2f;
+		const float BULLET_TRAIL_LIFETIME         = 1.5f;
 		const float MIN_DISTANCE_FOR_BULLET_TRAIL = 0.8f;
 
 		int m_bulletTrailLayerNumFPP;
@@ -80,13 +73,11 @@ namespace Jampacked.ProjectInca
 
 			//spawn first person bullet trail
 			//if the hit was super close, the trail would look weird so don't draw it
-			if (bulletTrailFPP
-			    && Vector3.Distance(muzzleFPP.position, bulletTrailEndPos) > MIN_DISTANCE_FOR_BULLET_TRAIL)
+			if (Vector3.Distance(muzzleFPP.position, bulletTrailEndPos) > MIN_DISTANCE_FOR_BULLET_TRAIL)
 			{
                 DrawBulletTrail(
                     muzzleWorldPosFPP,
                     bulletTrailEndPos,
-                    bulletTrailFPP.gameObject,
                     m_bulletTrailLayerNumFPP
                 );
             }
@@ -161,20 +152,32 @@ namespace Jampacked.ProjectInca
 
 		void CreateImpactEffect(Vector3 a_hitPosition, Vector3 a_hitNormal)
 		{
-			var newImpactEffect = Instantiate(impactEffect, a_hitPosition, Quaternion.LookRotation(a_hitNormal));
-			
-			Destroy(newImpactEffect, 1f);
-		}
+            var newImpactEffect = BulletImpactEffectPooler.Instance.GetObject();
+
+            newImpactEffect.transform.position = a_hitPosition;
+			newImpactEffect.transform.rotation = Quaternion.LookRotation(a_hitNormal);
+
+            StartCoroutine(RemoveImpactEffectRoutine(newImpactEffect));
+        }
+
+		IEnumerator RemoveImpactEffectRoutine(GameObject a_impactEffectObject)
+		{
+            yield return new WaitForSeconds(1f);
+
+            BulletImpactEffectPooler.Instance.ResetObject(a_impactEffectObject);
+        }
 
 		void DrawBulletTrail(
 			Vector3    a_startPos,
 			Vector3    a_endPos,
-			GameObject a_bulletTrailGO,
 			int        a_bulletTrailLayer = 0
 		)
 		{
-			GameObject   newBulletTrailGO = Instantiate(a_bulletTrailGO, a_startPos, Quaternion.identity);
+			GameObject   newBulletTrailGO = BulletTrailPooler.Instance.GetObject();
 			LineRenderer newBulletTrailLR = newBulletTrailGO.GetComponent<LineRenderer>();
+
+            newBulletTrailGO.transform.position = a_startPos;
+			newBulletTrailGO.transform.rotation = Quaternion.identity;
 
 			newBulletTrailLR.positionCount = 3;
 
@@ -184,8 +187,15 @@ namespace Jampacked.ProjectInca
 
 			newBulletTrailGO.layer = a_bulletTrailLayer;
 
-			GameObject.Destroy(newBulletTrailGO, BULLET_TRAIL_LIFETIME);
-		}
+            StartCoroutine(RemoveBulletTrailRoutine(newBulletTrailGO));
+        }
+
+        IEnumerator RemoveBulletTrailRoutine(GameObject a_bulletTrailObject)
+        {
+            yield return new WaitForSeconds(BULLET_TRAIL_LIFETIME);
+
+            BulletTrailPooler.Instance.ResetObject(a_bulletTrailObject);
+        }
 
 		public override bool Reload(float a_delay = 0f)
 		{

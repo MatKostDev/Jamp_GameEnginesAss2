@@ -196,7 +196,7 @@ namespace Jampacked.ProjectInca
             };
             m_dispatcher.PostEvent(tutorialKilledEvent);
 
-			Destroy(gameObject, deathDuration);
+			gameObject.SetActive(false);
 		}
 
 		void SetTargetToClosest()
